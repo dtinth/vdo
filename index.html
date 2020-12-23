@@ -6,23 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Hello!</title>
-    
-    <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css">
-    
-    <!-- import the webpage's javascript file -->
-    <script src="/script.js" defer></script>
+    <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
   </head>  
-  <body>
-    <h1>Hi there!</h1>
-    
-    <p>
-      I'm your cool new webpage. Made with <a href="https://glitch.com">Glitch</a>!
-    </p>
-
-    <!-- include the Glitch button to show what the webpage is about and
-          to make it easier for folks to view source and remix -->
-    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
-    <script src="https://button.glitch.me/button.js" defer></script>
+  <body style="margin: 0; padding: 0">
+    <div id="mainElement" style="height: 100vh; width: 100vw; position: absolute;">
+    </div>
+    <script src="https://vjs.zencdn.net/7.10.2/video.min.js"></script>
+    <script>
+      window.ondragover = e => {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+      window.ondrop = async e => {
+        e.preventDefault()
+        e.stopPropagation()
+        try {
+          var dt = e.dataTransfer
+          var files = dt.files
+          var vjs = document.createElement('video-js')
+          var src = document.createElement('source')
+          vjs.appendChild(src)
+          src.src = URL.createObjectURL(files[0])
+          src.type = files[0].type
+          mainElement.innerHTML = ''
+          mainElement.appendChild(vjs)
+          videojs(vjs, {
+            controls: true,
+            autoplay: false,
+            preload: 'auto',
+            fluid: true,
+          })
+        } catch (e) {
+          alert(String(e))
+        }
+      }
+    </script>
   </body>
 </html>
