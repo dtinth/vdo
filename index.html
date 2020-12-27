@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Hello!</title>
+    <title>Video player</title>
     <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
     <style>
       .vjs-fill.video-js .vjs-tech {
@@ -17,6 +17,7 @@
     <div id="mainElement" style="height: 100vh; width: 100vw; position: absolute;">
     </div>
     <script src="https://vjs.zencdn.net/7.10.2/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-hotkeys@0.2.27/videojs.hotkeys.min.js"></script>
     <script>
       window.ondragover = e => {
         e.preventDefault()
@@ -47,6 +48,13 @@
           autoplay: false,
           preload: 'auto',
           fill: true,
+          inactivityTimeout: 0,
+        }).ready(function() {
+          this.hotkeys({
+            captureDocumentHotkeys: true,
+            documentHotkeysFocusElementFilter: () => true,
+            enableJogStyle: true,
+          });
         })
       }
       const startTmpSessionWith = (targetWindow, sessionId) => {
