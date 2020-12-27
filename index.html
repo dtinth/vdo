@@ -7,6 +7,11 @@
 
     <title>Hello!</title>
     <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
+    <style>
+      .vjs-fill.video-js .vjs-tech {
+        height: calc(100% - 30px);
+      }
+    </style>
   </head>  
   <body style="margin: 0; padding: 0">
     <div id="mainElement" style="height: 100vh; width: 100vw; position: absolute;">
@@ -23,21 +28,45 @@
         try {
           var dt = e.dataTransfer
           var files = dt.files
-          var vjs = document.createElement('video-js')
-          var src = document.createElement('source')
-          vjs.appendChild(src)
-          src.src = URL.createObjectURL(files[0])
-          src.type = files[0].type
-          mainElement.innerHTML = ''
-          mainElement.appendChild(vjs)
-          videojs(vjs, {
-            controls: true,
-            autoplay: false,
-            preload: 'auto',
-            fluid: true,
-          })
+          const file = files[0]
+          openVideo(file)
         } catch (e) {
           alert(String(e))
+        }
+      }
+      function openVideo(file) {
+        var vjs = document.createElement('video-js')
+        var src = document.createElement('source')
+        vjs.appendChild(src)
+        src.src = URL.createObjectURL(file)
+        src.type = file.type
+        mainElement.innerHTML = ''
+        mainElement.appendChild(vjs)
+        videojs(vjs, {
+          controls: true,
+          autoplay: false,
+          preload: 'auto',
+          fill: true,
+        })
+      }
+      const startTmpSessionWith = (targetWindow, sessionId) => {
+        window.addEventListener('message', async e => {
+          if (e.data.id === 'getfile') {
+            /* global parseJSON */
+            openVideo(e.data.result.blob)
+          }
+        })
+        targetWindow.postMessage({
+          jsonrpc: '2.0',
+          method: 'tmp.getOpenedFile',
+          params: { sessionId },
+          id: 'getfile',
+        }, '*')
+      }
+      {
+        const match = location.hash.match(/tmpsessionid=([\w-]+)/)
+        if (window.opener && match) {
+          startTmpSessionWith(window.opener, match[1])
         }
       }
     </script>
